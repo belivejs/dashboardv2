@@ -1,0 +1,16 @@
+name: Build Windows
+on: [push]
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - run: pip install flet
+      - run: flet build windows
+      - uses: actions/upload-artifact@v3
+        with:
+          name: windows-app
+          path: build/windows/
