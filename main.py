@@ -5,22 +5,27 @@ import base64
 import shutil
 
 def main(page: ft.Page):
+    # 스크립트 파일의 디렉토리 경로 (windows-app/)
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    # 프로젝트 루트 디렉토리 경로 (상위 디렉토리)
+    project_root = os.path.dirname(script_dir)
+    
     # 페이지 설정
     page.title = "Dashboard"
     page.vertical_alignment = ft.MainAxisAlignment.START
     page.window.width = 500
     
     # assets 디렉토리 설정 (이미지 로드용)
-    page.assets_dir = "img"
+    page.assets_dir = os.path.join(project_root, "img")
     
     # JSON 파일 경로
-    공지사항_path = "data/공지사항.json"
-    알림창_path = "data/알림창.json"
-    프로필_path = "data/프로필.json"
-    미니맵_path = "data/미니맵.json"
-    메뉴_path = "data/메뉴.json"
-    프리셋_path = "data/프리셋.json"
-    url_path = "data/url.json"
+    공지사항_path = os.path.join(project_root, "data", "공지사항.json")
+    알림창_path = os.path.join(project_root, "data", "알림창.json")
+    프로필_path = os.path.join(project_root, "data", "프로필.json")
+    미니맵_path = os.path.join(project_root, "data", "미니맵.json")
+    메뉴_path = os.path.join(project_root, "data", "메뉴.json")
+    프리셋_path = os.path.join(project_root, "data", "프리셋.json")
+    url_path = os.path.join(project_root, "data", "url.json")
     
     # JSON 파일 읽기 함수
     def load_json(file_path):
@@ -70,6 +75,9 @@ def main(page: ft.Page):
     
     # 스크롤 위치 저장용
     settings_scroll_position = 0.0
+    
+    # 항상 최상단 설정 (변수에 저장)
+    항상_최상단 = False
     
     # 메인 콘텐츠 컨테이너 (동적으로 변경됨)
     main_content_container = ft.Container(expand=True)
@@ -214,8 +222,24 @@ def main(page: ft.Page):
         
         home_preset_radio_group.on_change = on_home_preset_selection_change
         
+        # 항상 최상단 스위치
+        항상_최상단_스위치 = ft.Switch(
+            value=항상_최상단,
+            label="항상 최상단에 표시",
+        )
+        
+        # 항상 최상단 스위치 변경 핸들러
+        def on_항상_최상단_change(e):
+            nonlocal 항상_최상단
+            항상_최상단 = e.control.value
+            page.window.always_on_top = 항상_최상단
+            page.update()
+        
+        항상_최상단_스위치.on_change = on_항상_최상단_change
+        
         # 홈 화면 콘텐츠 구성
         home_content_items = [
+            항상_최상단_스위치,
             # 프리셋 선택 섹션
             ft.Text(
                 value="프리셋 선택",
@@ -373,7 +397,7 @@ def main(page: ft.Page):
             if profile_image_path:
                 # 상대 경로인 경우 img 폴더 확인
                 if not os.path.isabs(profile_image_path):
-                    img_path = os.path.join("img", profile_image_path)
+                    img_path = os.path.join(project_root, "img", profile_image_path)
                 else:
                     img_path = profile_image_path
                 
@@ -654,7 +678,7 @@ def main(page: ft.Page):
                 img_path = item_icon
                 # 상대 경로인 경우 img 폴더 확인
                 if not os.path.isabs(img_path):
-                    img_path = os.path.join("img", item_icon)
+                    img_path = os.path.join(project_root, "img", item_icon)
                 
                 if os.path.exists(img_path):
                     try:
@@ -759,7 +783,7 @@ def main(page: ft.Page):
         )
         
         # img 디렉토리의 이미지 파일 목록 가져오기
-        img_dir = "img"
+        img_dir = os.path.join(project_root, "img")
         image_files = []
         if os.path.exists(img_dir):
             for file in os.listdir(img_dir):
@@ -986,7 +1010,7 @@ def main(page: ft.Page):
         )
         
         # img 디렉토리의 이미지 파일 목록 가져오기
-        img_dir = "img"
+        img_dir = os.path.join(project_root, "img")
         image_files = []
         if os.path.exists(img_dir):
             for file in os.listdir(img_dir):
@@ -1269,7 +1293,7 @@ def main(page: ft.Page):
         )
         
         # img 디렉토리의 이미지 파일 목록 가져오기
-        img_dir = "img"
+        img_dir = os.path.join(project_root, "img")
         image_files = []
         if os.path.exists(img_dir):
             for file in os.listdir(img_dir):
@@ -1477,7 +1501,7 @@ def main(page: ft.Page):
             menu_subtext = current_menu.get("서브_텍스트", "")
         
         # img 디렉토리의 이미지 파일 목록 가져오기
-        img_dir = "img"
+        img_dir = os.path.join(project_root, "img")
         image_files = []
         if os.path.exists(img_dir):
             for file in os.listdir(img_dir):
@@ -1736,7 +1760,7 @@ def main(page: ft.Page):
     # 프로필 추가 화면
     def get_add_profile_content():
         # img 디렉토리의 이미지 파일 목록 가져오기
-        img_dir = "img"
+        img_dir = os.path.join(project_root, "img")
         image_files = []
         if os.path.exists(img_dir):
             for file in os.listdir(img_dir):
@@ -1998,7 +2022,7 @@ def main(page: ft.Page):
         profile = profile_data.get(first_profile_key, {})
         
         # img 디렉토리의 이미지 파일 목록 가져오기
-        img_dir = "img"
+        img_dir = os.path.join(project_root, "img")
         image_files = []
         if os.path.exists(img_dir):
             for file in os.listdir(img_dir):
@@ -2335,7 +2359,7 @@ def main(page: ft.Page):
             image_path = minimap_item.get("이미지", "")
             if image_path:
                 if not os.path.isabs(image_path):
-                    img_path = os.path.join("img", image_path)
+                    img_path = os.path.join(project_root, "img", image_path)
                 else:
                     img_path = image_path
                 
@@ -2403,7 +2427,7 @@ def main(page: ft.Page):
                 # 메뉴 아이콘 위젯 생성
                 menu_icon_widget = None
                 if menu_icon:
-                    img_path = os.path.join("img", menu_icon)
+                    img_path = os.path.join(project_root, "img", menu_icon)
                     if os.path.exists(img_path):
                         try:
                             with open(img_path, 'rb') as img_file:
@@ -2603,7 +2627,7 @@ def main(page: ft.Page):
             image_path = minimap_item.get("이미지", "")
             if image_path:
                 if not os.path.isabs(image_path):
-                    img_path = os.path.join("img", image_path)
+                    img_path = os.path.join(project_root, "img", image_path)
                 else:
                     img_path = image_path
                 
@@ -2672,7 +2696,7 @@ def main(page: ft.Page):
                 # 메뉴 아이콘 위젯 생성
                 menu_icon_widget = None
                 if menu_icon:
-                    img_path = os.path.join("img", menu_icon)
+                    img_path = os.path.join(project_root, "img", menu_icon)
                     if os.path.exists(img_path):
                         try:
                             with open(img_path, 'rb') as img_file:
