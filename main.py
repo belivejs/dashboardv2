@@ -3,11 +3,18 @@ import json
 import os
 import base64
 import shutil
+import sys
 
 def main(page: ft.Page):
-    # 스크립트 파일의 디렉토리 경로 (windows-app/)
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    # 프로젝트 루트 디렉토리 경로 (상위 디렉토리)
+    # 스크립트 파일 위치 기준으로 경로 계산 (exe 빌드 시에도 작동)
+    if getattr(sys, 'frozen', False):
+        # PyInstaller로 빌드된 경우
+        script_dir = os.path.dirname(sys.executable)
+    else:
+        # 일반 실행 시
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+    
+    # 프로젝트 루트 디렉토리 (상위 디렉토리)
     project_root = os.path.dirname(script_dir)
     
     # 페이지 설정
@@ -18,7 +25,7 @@ def main(page: ft.Page):
     # assets 디렉토리 설정 (이미지 로드용)
     page.assets_dir = os.path.join(project_root, "img")
     
-    # JSON 파일 경로
+    # JSON 파일 경로 (스크립트 위치 기준 상대 경로)
     공지사항_path = os.path.join(project_root, "data", "공지사항.json")
     알림창_path = os.path.join(project_root, "data", "알림창.json")
     프로필_path = os.path.join(project_root, "data", "프로필.json")
